@@ -7,26 +7,63 @@ import { PrismaNotificationMapper } from '../mappers/prisma-notification-mapper'
 @Injectable()
 export class PrismaNotificationRepository implements NotificationsRepository {
   constructor(private readonly prismaService: PrismaService) {}
-  async findManyByRecipientId(recipientId: string): Promise<Notification[]> {
-    throw new Error('Method not implemented.');
-  }
 
   async findById(notificationId: string): Promise<Notification | null> {
-    throw new Error('Method not implemented.');
+    try {
+      const notification = await this.prismaService.notification.findUnique({
+        where: { id: notificationId },
+      });
+      if (!notification) {
+        return null;
+      }
+      return PrismaNotificationMapper.toDomain(notification);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async findManyByRecipientId(recipientId: string): Promise<Notification[]> {
+    try {
+      const notifications = await this.prismaService.notification.findMany({
+        where: { recipientId },
+      });
+      return notifications.map(PrismaNotificationMapper.toDomain);
+    } catch (error) {
+      throw new Error('Method not implemented.');
+    }
   }
 
   async countManyByRecipientId(recipientId: string): Promise<number> {
-    throw new Error('Method not implemented.');
+    try {
+      const count = await this.prismaService.notification.count({
+        where: { recipientId },
+      });
+      return count;
+    } catch (error) {
+      throw new Error('Method not implemented.');
+    }
   }
 
   async create(notification: Notification) {
-    const raw = PrismaNotificationMapper.toPersistence(notification);
-    await this.prismaService.notification.create({
-      data: raw,
-    });
+    try {
+      const raw = PrismaNotificationMapper.toPersistence(notification);
+      await this.prismaService.notification.create({
+        data: raw,
+      });
+    } catch (error) {
+      throw new Error('Method not implemented.');
+    }
   }
 
   async save(notification: Notification): Promise<void> {
-    throw new Error('Method not implemented.');
+    try {
+      const raw = PrismaNotificationMapper.toPersistence(notification);
+      await this.prismaService.notification.update({
+        where: { id: notification.id },
+        data: raw,
+      });
+    } catch (error) {
+      throw new Error('Method not implemented.');
+    }
   }
 }
