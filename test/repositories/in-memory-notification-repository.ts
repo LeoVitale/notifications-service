@@ -18,6 +18,16 @@ export class InMemoryNotificationsRepository
     }
   }
 
+  async findManyByRecipientId(recipientId: string): Promise<Notification[]> {
+    try {
+      return this.notifications.filter((notification) => {
+        return notification.recipientId === recipientId;
+      });
+    } catch (error) {
+      throw new Error('Method not implemented.');
+    }
+  }
+
   async countManyByRecipientId(recipientId: string): Promise<number> {
     try {
       return this.notifications.filter((notification) => {
